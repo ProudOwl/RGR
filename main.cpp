@@ -12,6 +12,14 @@
 
 using namespace std;
 
+enum class Menu {
+    PERMUTATION = 1,
+    MATRIX,
+    MAGIC_SQUARE,
+    KEY_GENERATOR,
+    EXIT = 5
+};
+
 // Объявления указателей на функции
 using PermutationText = string (*)(const string&, const string&);
 using PermutationFile = void (*)(const string&, const string&, const string&);
@@ -195,18 +203,12 @@ void KeyGeneratorMenu() {
     
     string cipherName;
     
-    switch (choice) {
-        case 1:
-            cipherName = "permutation";
-            break;
-        case 2:
-            cipherName = "matrix";
-            break;
-        case 3:
-            cipherName = "magicsquare";
-            break;
-        case 4:
-            return;
+    switch (static_cast<Menu>(choice)) {
+        case Menu::PERMUTATION: cipherName = "permutation";break;
+        case Menu::MATRIX: cipherName = "matrix"; break;
+        case Menu::MAGIC_SQUARE: cipherName = "magicsquare"; break;
+        case Menu::EXIT: return;
+        default: return;
     }
     
     string key = GenerateKeyCipher(cipherName);
@@ -215,7 +217,6 @@ void KeyGeneratorMenu() {
     }
 }
 
-// Функция для обработки текстовых файлов
 void ProcessTextFile(const string& inPath, const string& outPath, const string& key, bool encrypt, const string& cipherType, void* handle, TextFunc pEncrypt, TextFunc pDecrypt) {
     ifstream inputFile(inPath);
     if (!inputFile) {
@@ -274,8 +275,8 @@ void MatrixMenu() {
     cout << "\nМАТРИЧНАЯ ШИФРОВКА\n";
     cout << "1. Зашифровать текст.\n";
     cout << "2. Расшифровать текст.\n";
-    cout << "3. Зашифровать файл (бинарный).\n";
-    cout << "4. Расшифровать файл (бинарный).\n";
+    cout << "3. Зашифровать бинарный файл.\n";
+    cout << "4. Расшифровать бинарный файл.\n";
     cout << "5. Зашифровать текстовый файл.\n";
     cout << "6. Расшифровать текстовый файл.\n";
     cout << "7. В главное меню.\n";
@@ -353,8 +354,7 @@ void MatrixMenu() {
         }
         
         try {
-            ProcessTextFile(inPath, outPath, key, (choice == 5), "матричной шифровки", 
-                          handle, pEncryptText, pDecryptText);
+            ProcessTextFile(inPath, outPath, key, (choice == 5), "матричной шифровки", handle, pEncryptText, pDecryptText);
         } catch (const exception& e) {
             cerr << "ОШИБКА! " << e.what() << endl;
         }
@@ -391,8 +391,8 @@ void MagicSquareMenu() {
     cout << "\nШИФРОВАНИЕ МАГИЧЕСКИМ КВАДРАТОМ\n";
     cout << "1. Зашифровать текст.\n";
     cout << "2. Расшифровать текст.\n";
-    cout << "3. Зашифровать файл (бинарный).\n";
-    cout << "4. Расшифровать файл (бинарный).\n";
+    cout << "3. Зашифровать бинарный файл.\n";
+    cout << "4. Расшифровать бинарный файл.\n";
     cout << "5. Зашифровать текстовый файл.\n";
     cout << "6. Расшифровать текстовый файл.\n";
     cout << "7. В главное меню.\n";
@@ -400,7 +400,6 @@ void MagicSquareMenu() {
     uint64_t choice = MenuChoice(1, 7);
 
     if (choice == 1 || choice == 2) {
-        // Обработка текста
         cout << "Введите текст для его обработки: ";
         getline(cin, text);
         
@@ -508,8 +507,8 @@ void PermutationMenu() {
     cout << "\nШИФР ПЕРЕСТАНОВКИ\n";
     cout << "1. Зашифровать текст.\n";
     cout << "2. Расшифровать текст.\n";
-    cout << "3. Зашифровать файл (бинарный).\n";
-    cout << "4. Расшифровать файл (бинарный).\n";
+    cout << "3. Зашифровать бинарный файл.\n";
+    cout << "4. Расшифровать бинарный файл.\n";
     cout << "5. Зашифровать текстовый файл.\n";
     cout << "6. Расшифровать текстовый файл.\n";
     cout << "7. В главное меню.\n";
@@ -587,8 +586,7 @@ void PermutationMenu() {
         }
         
         try {
-            ProcessTextFile(inPath, outPath, key, (choice == 5), "шифра перестановки", 
-                          handle, pEncryptText, pDecryptText);
+            ProcessTextFile(inPath, outPath, key, (choice == 5), "шифра перестановки", handle, pEncryptText, pDecryptText);
         } catch (const exception& e) {
             cerr << "ОШИБКА! " << e.what() << endl;
         }
@@ -615,22 +613,14 @@ int main() {
             cout << "5. Выход\n";
 
             uint64_t choice = MenuChoice(1, 5);
-            switch (choice) {
-                case 1:
-                    PermutationMenu();
-                    break;
-                case 2:
-                    MatrixMenu();
-                    break;
-                case 3:
-                    MagicSquareMenu();
-                    break;
-                case 4:
-                    KeyGeneratorMenu();
-                    break;
-                case 5:
-                    cout << "Выход из программы.\n";
-                    return 0;
+
+            switch (static_cast<Menu>(choice)) {
+                case Menu::PERMUTATION: PermutationMenu(); break;
+                case Menu::MATRIX: MatrixMenu(); break;
+                case Menu::MAGIC_SQUARE: MagicSquareMenu(); break;
+                case Menu::KEY_GENERATOR: KeyGeneratorMenu(); break;
+                case Menu::EXIT: cout << "Выход из программы.\n"; return 0;
+                default: return 0;
             }
         }
 
